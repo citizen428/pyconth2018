@@ -2,18 +2,21 @@
 import scrapy
 
 from pyconth.items import Job, JobLoader
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
 
 
-class JobsSpider(scrapy.Spider):
+class JobsSpider(CrawlSpider):
     name = 'jobs'
     allowed_domains = ['www.python.org']
     start_urls = ['https://www.python.org/jobs/']
 
-    # Find job pages
-    def parse(self, response):
-        for jobs in response.css('.pagination a[href^="?page"]::attr(href)').extract():
-            page = response.urljoin(jobs)
-            yield scrapy.Request(page, callback=self.parse_jobs)
+    rules = [
+        Rule(
+            LinkExtractor(allow=r'\?page='),
+            callback='parse_jobs'
+        )
+    ]
 
     # Extract jobs from job pages
     def parse_jobs(self, response):
