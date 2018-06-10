@@ -5,7 +5,10 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+import time
 
-class PyconthPipeline(object):
+
+class CrawledAtPipeline(object):
     def process_item(self, item, spider):
+        item['crawled_at'] = time.time()
         return item

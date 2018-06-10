@@ -6,8 +6,14 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+import time
 
 from scrapy.loader.processors import Identity, Join, MapCompose, TakeFirst
+
+
+def parse_time(s):
+    parsed = time.strptime('23 February 2018', '%d %B %Y')
+    return time.mktime(parsed)
 
 
 def tagify(s):
@@ -20,6 +26,7 @@ class Job(scrapy.Item):
     location = scrapy.Field()
     tags = scrapy.Field()
     date = scrapy.Field()
+    crawled_at = scrapy.Field()
 
 
 class JobLoader(scrapy.loader.ItemLoader):
@@ -28,4 +35,5 @@ class JobLoader(scrapy.loader.ItemLoader):
 
     company_in = MapCompose(lambda s: s.strip())
     company_out = Join('')
+    date_in = MapCompose(parse_time)
     tags_out = MapCompose(tagify)
